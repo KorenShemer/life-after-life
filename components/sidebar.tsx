@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { BookHeart, Users, HeartPulse, ShieldCheck, Settings, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-
+import { lifeafterlifelogo } from "@/public"
 interface SidebarProps {
   activeSection: string
   onSectionChange: (section: string) => void
@@ -52,8 +52,12 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         <div className="p-6 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <BookHeart className="h-5 w-5 text-primary" />
-              
+              <img
+                src={lifeafterlifelogo.src}
+                alt="Life After Life"
+                className="h-10 w-10 rounded-lg object-cover"
+              />
+
             </div>
             <div>
               <h2 className="font-semibold text-sidebar-foreground">Life After Life</h2>
@@ -100,12 +104,6 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
             <Settings className="h-5 w-5 text-muted-foreground" />
             Account Settings
           </button>
-          <div className="mt-4 px-4 py-3 rounded-lg bg-card/50 border border-border">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary" />
-              <span>End-to-end encrypted</span>
-            </div>
-          </div>
         </div>
       </aside>
     </>
