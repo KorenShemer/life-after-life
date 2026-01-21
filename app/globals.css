@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Legacy Messaging System - Deep Slate/Blue Trust-Building Theme */
+/* Life After Life - Deep Slate/Blue Trust-Building Theme */
 :root {
   --background: oklch(0.13 0.01 250);
   --foreground: oklch(0.95 0.01 250);
@@ -39,12 +39,12 @@
   --sidebar-border: oklch(0.25 0.015 250);
   --sidebar-ring: oklch(0.65 0.15 165);
 
-  /* Custom Legacy System Colors */
+  /* Custom Life After Life Colors */
   --success: oklch(0.65 0.15 165);
   --warning: oklch(0.75 0.15 80);
   --info: oklch(0.55 0.12 200);
 
-  /* Added escalation phase colors */
+  /* Proof of Life Phase Colors */
   --phase-safe: oklch(0.65 0.15 165);
   --phase-warning: oklch(0.75 0.15 80);
   --phase-critical: oklch(0.65 0.18 25);
@@ -93,7 +93,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
-  /* Added phase colors to theme */
+  /* Phase colors */
   --color-phase-safe: var(--phase-safe);
   --color-phase-warning: var(--phase-warning);
   --color-phase-critical: var(--phase-critical);

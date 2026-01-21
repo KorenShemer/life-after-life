@@ -1,15 +1,140 @@
 "use client"
 
 import { useState } from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [emailError, setEmailError] = useState("")
+  const [passwordError, setPasswordError] = useState("")
+  const [emailTouched, setEmailTouched] = useState(false)
+  const [passwordTouched, setPasswordTouched] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [loginError, setLoginError] = useState("")
 
-  const handleLogin = () => {
-    console.log("Login attempt:", { email, password })
+  // Email validation
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!email) {
+      return "Email is required"
+    }
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address"
+    }
+    return ""
+  }
+
+  // Password validation
+  const validatePassword = (password: string) => {
+    if (!password) {
+      return "Password is required"
+    }
+    if (password.length < 8) {
+      return "Password must be at least 8 characters"
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return "Password must contain at least one lowercase letter"
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return "Password must contain at least one uppercase letter"
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return "Password must contain at least one number"
+    }
+    if (!/(?=.*[@$!%*?&#])/.test(password)) {
+      return "Password must contain at least one special character (@$!%*?&#)"
+    }
+    return ""
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    if (emailTouched) {
+      setEmailError(validateEmail(value))
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPassword(value)
+    if (passwordTouched) {
+      setPasswordError(validatePassword(value))
+    }
+  }
+
+  const handleEmailBlur = () => {
+    if (email) {
+      setEmailTouched(true)
+      setEmailError(validateEmail(email))
+    }
+  }
+
+  const handlePasswordBlur = () => {
+    if (password) {
+      setPasswordTouched(true)
+      setPasswordError(validatePassword(password))
+    }
+  }
+
+  const handleLogin = async () => {
+    const emailErr = validateEmail(email)
+    const passwordErr = validatePassword(password)
+    
+    setEmailError(emailErr)
+    setPasswordError(passwordErr)
+    setEmailTouched(true)
+    setPasswordTouched(true)
+    setLoginError("")
+
+    if (!emailErr && !passwordErr) {
+      setIsLoading(true)
+      
+      try {
+        // Simulate backend authentication API call
+        // Replace this with your actual authentication endpoint
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        })
+        
+        if (!response.ok) {
+          const data = await response.json()
+          
+          // Handle different error types from backend
+          if (response.status === 401) {
+            setLoginError("Invalid email or password")
+          } else if (response.status === 404) {
+            setLoginError("No account found with this email address")
+          } else if (response.status === 403) {
+            setLoginError("Your account has been suspended. Please contact support")
+          } else {
+            setLoginError("Unable to login. Please try again later")
+          }
+          setIsLoading(false)
+          return
+        }
+        
+        const data = await response.json()
+        console.log("Login successful:", data)
+        
+        // Handle successful login (e.g., store token, redirect)
+        // localStorage.setItem('token', data.token) // NOT AVAILABLE in artifacts
+        // window.location.href = '/dashboard'
+        
+        setIsLoading(false)
+      } catch (error) {
+        // Network error or API unavailable
+        console.error("Login error:", error)
+        setLoginError("Unable to connect. Please check your internet connection and try again")
+        setIsLoading(false)
+      }
+    }
   }
 
   const handleGoogleLogin = () => {
@@ -34,19 +159,45 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="space-y-4">
+          {/* Login Error Message */}
+          {loginError && (
+            <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-[10px] flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0" />
+              <p className="text-[13px] text-red-400">{loginError}</p>
+            </div>
+          )}
+
           {/* Email Input */}
           <div>
             <label htmlFor="email" className="block text-[15px] font-medium text-white mb-1">
               Email
             </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              className="w-full px-4 py-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-[10px] text-white text-[15px] placeholder-gray-500 focus:outline-none focus:border-[#3b82f6] transition"
-            />
+            <div className="relative">
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={handleEmailBlur}
+                placeholder="your@email.com"
+                className={`w-full px-4 py-1 bg-[#1c1c1c] border rounded-[10px] text-white text-[15px] placeholder-gray-500 focus:outline-none transition pr-10 ${
+                  emailError && emailTouched && email
+                    ? "border-red-500/50 focus:border-red-500/50"
+                    : "border-[#2a2a2a] focus:border-[#3b82f6]"
+                }`}
+              />
+              {emailTouched && emailError && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <AlertCircle className="h-[18px] w-[18px] text-red-500" />
+                </div>
+              )}
+            </div>
+            {emailError && emailTouched && email && (
+              <p className="mt-1.5 text-[13px] text-red-400 flex items-center gap-1">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {emailError}
+              </p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -59,9 +210,14 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
+                onBlur={handlePasswordBlur}
                 placeholder="••••••••••"
-                className="w-full px-4 py-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-[10px] text-white text-[15px] placeholder-gray-400 focus:outline-none focus:border-[#3b82f6] transition pr-12"
+                className={`w-full px-4 py-1 bg-[#1c1c1c] border rounded-[10px] text-white text-[15px] placeholder-gray-400 focus:outline-none transition pr-12 ${
+                  passwordError && passwordTouched && password
+                    ? "border-red-500/50 focus:border-red-500/50"
+                    : "border-[#2a2a2a] focus:border-[#3b82f6]"
+                }`}
               />
               <button
                 type="button"
@@ -75,6 +231,12 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {passwordError && passwordTouched && password && (
+              <p className="mt-1.5 text-[13px] text-red-400 flex items-center gap-1">
+                <AlertCircle className="h-3.5 w-3.5" />
+                {passwordError}
+              </p>
+            )}
           </div>
 
           {/* Links */}
@@ -90,9 +252,24 @@ export default function LoginPage() {
           {/* Login Button */}
           <button
             onClick={handleLogin}
-            className="w-full py-2.5 bg-white text-black text-[15px] font-medium rounded-[10px] hover:bg-gray-100 transition mt-3"
+            disabled={!email || !password || !!emailError || !!passwordError || isLoading}
+            className={`w-full py-2.5 text-[15px] font-medium rounded-[10px] transition mt-3 flex items-center justify-center gap-2 ${
+              !email || !password || emailError || passwordError || isLoading
+                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-100 cursor-pointer"
+            }`}
           >
-            Login
+            {isLoading ? (
+              <>
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Verifying...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
 
           {/* Google Login Button */}
