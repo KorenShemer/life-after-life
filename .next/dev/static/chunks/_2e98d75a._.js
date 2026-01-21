@@ -7674,7 +7674,7 @@ function ProfileView({ onBack, language = "en" }) {
         columnNumber: 5
     }, this);
 }
-_s(ProfileView, "1WhKm8791U4cmWjRrD6Tx4AzSzc=");
+_s(ProfileView, "Harn3CKqXbTkmqOJWH0CERUeN5s=");
 _c = ProfileView;
 var _c;
 __turbopack_context__.k.register(_c, "ProfileView");

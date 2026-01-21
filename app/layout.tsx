@@ -8,25 +8,24 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Legacy Vault - Your Memories, Your Legacy",
+  title: "Life After Life - Memory Sharing",
   description: "Secure after-death memory sharing platform. Create lasting messages for your loved ones.",
-  generator: "v0.app",
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
+        url: "/life-after-life_logo.png",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/icon-dark-32x32.png",
+        url: "/life-after-life_logo.png",
         media: "(prefers-color-scheme: dark)",
       },
       {
-        url: "/icon.svg",
+        url: "/life-after-life_logo.png",
         type: "image/svg+xml",
       },
     ],
-    apple: "/apple-icon.png",
+    apple: "/life-after-life_logo.png",
   },
 }
 
